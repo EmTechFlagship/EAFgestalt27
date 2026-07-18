@@ -1,4 +1,4 @@
-pymobiledevice3==7.6.0
+pymobiledevice3==7.8.3
 pyimg4<0.8.4  # Avoid pylzss/lzfse C extensions (no wheels for Python >=3.14)
 PySide6-Essentials; sys_platform != 'linux'
 PySide6; sys_platform == 'linux'
