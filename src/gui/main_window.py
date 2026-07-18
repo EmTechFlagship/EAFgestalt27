@@ -579,10 +579,13 @@ class MainWindow(QtWidgets.QMainWindow):
     def on_restartUACBtn_clicked(self):
         if os.name != 'nt':
             return
-        import pyuac
-        import sys
-        pyuac.runAsAdmin()
-        os.execl(sys.executable, sys.executable, *sys.argv)
+        try:
+            import pyuac
+            import sys
+            pyuac.runAsAdmin()
+            os.execl(sys.executable, sys.executable, *sys.argv)
+        except ImportError:
+            return
 
     @QtCore.Slot()
     def on_applyTweaksBtn_clicked(self):

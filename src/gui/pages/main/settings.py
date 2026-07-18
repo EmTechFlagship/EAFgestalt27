@@ -96,8 +96,11 @@ class SettingsPage(Page):
             self.ui.restartUACLbl.hide()
             self.ui.restartUACBtn.hide()
             return
-        import pyuac
-        show_btn = visible and not pyuac.isUserAdmin()
+        try:
+            import pyuac
+            show_btn = visible and not pyuac.isUserAdmin()
+        except ImportError:
+            show_btn = False
         self.ui.restartUACLbl.setVisible(show_btn)
         self.ui.restartUACBtn.setVisible(show_btn)
 
