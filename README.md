@@ -8,7 +8,7 @@ Customize your device with animated wallpapers, disable pesky daemons, and more!
 Make sure you have installed the [requirements](#requirements) if you are on Windows or Linux.
 
 > [!WARNING]
-> DO NOT USE THIS ON iOS 27! It will most likely result in data loss. Apple has patched the partial restore method that Nugget uses.
+> DO NOT USE THIS ON iOS 27! It will most likely result in data loss. Apple has patched the partial restore method that Nugget uses. On iOS 27.0 beta 1-4 you can instead use the on-device [mond](https://github.com/rooootdev/mond) app (see below).
 
 > [!NOTE]
 > Please back up your data before using this Project! Nugget may cause unforeseen problems, so it is better to be safe than sorry. We are not responsible for any damage done to your device.
@@ -199,7 +199,17 @@ Sparserestore works on all versions iOS 17.0-18.1.1.
 BookRestore works on all versions iOS 18.2-26.1.
 
 > [!NOTE]
-> **Mobilegestalt and AI Enabler tweaks are not supported on iOS 26.2+.** It will never be supported, do not make issues asking for when it is supported.
+> **Mobilegestalt and AI Enabler tweaks are not supported on iOS 26.2+ from a computer.** They will never be supported from a computer, do not make issues asking for when it is supported.
+
+> [!WARNING]
+> **iOS 27.0+ has fully patched both Sparserestore and BookRestore exploits.**
+> Apple changed `RestoreAttestationMode` from 2 to 6, adding:
+> - Path traversal validation in backup domain names
+> - New trust caches with stricter security policies
+> - SEP and iBoot security hardening
+> **This desktop tool cannot apply tweaks on any iOS 27.0 build.** However, an on-device exploit for MobileGestalt and PosterBoard was found and released by [rooootdev](https://github.com/rooootdev) as the [mond](https://github.com/rooootdev/mond) iOS app.
+> mond works on **iOS 27.0 dev beta 1-4 / public beta 1-2** (builds `24A5355q`, `24A5370h`, `24A5380h`, `24A5390f`) and was patched from **dev beta 5 / public beta 3** (build `24A5408d` and newer).
+> Note that mond is an on-device app (sideloaded with Xcode) — it is not part of this project, and this tool will not gain iOS 27 support.
 
 ## Read More
 If you would like to read more about the inner workings of the exploit and iOS restore system, I made a write up which you can read [here][ReadMoreGist].

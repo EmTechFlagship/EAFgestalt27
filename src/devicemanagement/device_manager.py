@@ -258,6 +258,24 @@ class DeviceManager:
             return True
         else:
             return self.data_singleton.current_device.is_exploit_fully_patched()
+
+    def get_current_device_patched_reason(self) -> str:
+        if self.data_singleton.current_device == None:
+            return ""
+        else:
+            return self.data_singleton.current_device.get_patched_reason()
+
+    def get_current_device_has_mond_support(self) -> bool:
+        if self.data_singleton.current_device == None:
+            return False
+        else:
+            return self.data_singleton.current_device.has_mond_support()
+
+    def get_current_device_mond_advice(self) -> str:
+        if self.data_singleton.current_device == None:
+            return ""
+        else:
+            return self.data_singleton.current_device.get_mond_advice()
         
     def current_device_books_container_uuid_callback(self, uuid: Optional[str]=None) -> Optional[Optional[str]]:
         # if there is no argument, return the existing uuid
@@ -498,6 +516,18 @@ class DeviceManager:
         self.do_not_unplug = ""
         if self.data_singleton.current_device.connected_via_usb:
             self.do_not_unplug = "\n" + QCoreApplication.tr("DO NOT UNPLUG")
+        
+        # Check for iOS 27+ and warn user
+        ver_parts = self.data_singleton.current_device.version.split(".")
+        major = int(ver_parts[0])
+        if major >= 27:
+            raise NuggetException(
+                QCoreApplication.tr("iOS 27.0+ is not supported by this desktop tool.") + "\n\n" +
+                QCoreApplication.tr("Apple patched both Sparserestore and BookRestore exploits in iOS 27.0.") + "\n\n" +
+                QCoreApplication.tr("Mobile Gestalt and AI Enabler tweaks can no longer be applied from a computer.") + "\n\n" +
+                self.data_singleton.current_device.get_mond_advice()
+            )
+        
         restore_bookrestore = use_bookrestore and not self.data_singleton.current_device.has_partial_sparserestore()
         if restore_bookrestore:
             if self.pref_manager.bookrestore_apply_mode == BookRestoreApplyMethod.AFC:

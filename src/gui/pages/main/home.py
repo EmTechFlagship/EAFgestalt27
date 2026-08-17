@@ -68,8 +68,15 @@ class HomePage(Page):
         support_str: str = "<span style=\"color: #32d74b;\">" + QCoreApplication.tr("Supported!") + "</span></a>"
         if Version(version) < Version("17.0"):
             support_str = "<span style=\"color: #ff0000;\">" + QCoreApplication.tr("Not Supported.") + "</span></a>"
+        elif Version(version) >= Version("27.0"):
+            # iOS 27+ fully patched - both Sparserestore and BookRestore are patched.
+            # The on-device mond app still supports 27.0 dev beta 1-4 / public beta 1-2.
+            if self.window.device_manager.get_current_device_has_mond_support():
+                support_str = "<span style=\"color: #ffff00;\">" + QCoreApplication.tr("On-Device Only (iOS 27)") + "</span></a>"
+            else:
+                support_str = "<span style=\"color: #ff0000;\">" + QCoreApplication.tr("Unsupported (iOS 27)") + "</span></a>"
         elif self.window.device_manager.get_current_device_patched():
-            # sparserestore fully patched
+            # sparserestore fully patched (iOS 26.2+ for MG/AI, 18.7.5-25.x gap)
             support_str = "<span style=\"color: #ffff00;\">"+ QCoreApplication.tr("Partially Supported.") + "</span></a>"
         self.ui.phoneVersionLbl.setText(f"<a style=\"text-decoration:none; color: white;\" href=\"#\">iOS {version} ({build}) {support_str}")
 

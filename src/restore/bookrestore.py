@@ -479,6 +479,32 @@ def perform_bookrestore(files: list[FileToRestore], lockdown_client: LockdownCli
                         current_device_books_uuid_callback = lambda x: None, progress_callback = lambda x: None,
                         transfer_mode: BookRestoreFileTransferMethod = BookRestoreFileTransferMethod.LocalHost,
                         do_full_reboot: bool = False):
+    # Check iOS version for exploit support
+    ver_parts = lockdown_client.product_version.split(".")
+    major = int(ver_parts[0])
+    minor = int(ver_parts[1]) if len(ver_parts) > 1 else 0
+    
+    if major >= 27:
+        raise NuggetException(
+            "iOS 27.0+ is not supported by this desktop tool.\n\n"
+            "Apple patched both Sparserestore and BookRestore exploits in iOS 27.0 by:\n"
+            "  - Upgrading RestoreAttestationMode from 2 to 6\n"
+            "  - Adding path traversal validation in backup domain names\n"
+            "  - New trust caches with stricter security policies\n"
+            "  - SEP and iBoot security hardening\n\n"
+            "Tweaks can no longer be applied from a computer on iOS 27.\n"
+            "However, an on-device exploit for MobileGestalt and PosterBoard was found "
+            "and released as the mond app (https://github.com/rooootdev/mond).\n"
+            "mond supports iOS 27.0 dev beta 1-4 / public beta 1-2 "
+            "(builds 24A5355q, 24A5370h, 24A5380h, 24A5390f) and was patched from "
+            "dev beta 5 / public beta 3 (build 24A5408d and newer)."
+        )
+    if major == 26 and minor >= 2:
+        raise NuggetException(
+            "iOS 26.2+ has patched Mobile Gestalt and AI Enabler tweaks.\n\n"
+            "BookRestore may still work for Feature Flags, PosterBoard, and other tweaks."
+        )
+    
     if not lockdown_client.developer_mode_status:
         # enable developer mode
         progress_callback("Enabling Developer Mode...")

@@ -140,6 +140,39 @@ def has_sparserestore_capability(lockdown_client: LockdownClient = None) -> bool
         minor = int(ver[1])
     return minor == 0
 
+def has_bookrestore_capability(lockdown_client: LockdownClient = None) -> bool:
+    """Check if the device supports the BookRestore exploit.
+    
+    BookRestore works on iOS 18.2 - 26.1.
+    iOS 26.2+ patched Mobile Gestalt via RestoreAttestationMode upgrade.
+    iOS 27.0+ patched all exploits via path traversal validation in backup domains
+    (the on-device mond app is the only iOS 27 alternative, and only for 27.0 beta 1-4).
+    """
+    if lockdown_client == None:
+        return True
+    ver = lockdown_client.product_version.split(".")
+    major = int(ver[0])
+    minor = int(ver[1]) if len(ver) > 1 else 0
+    patch = int(ver[2]) if len(ver) > 2 else 0
+    
+    # iOS 27.0+ fully patched - RestoreAttestationMode 2->6
+    if major >= 27:
+        return False
+    # iOS 26.2+ patched Mobile Gestalt but BookRestore may still work for other tweaks
+    # Actually BookRestore is fully patched on 26.2+ per constants.py
+    if major > 26 or (major == 26 and minor >= 2):
+        return False
+    # iOS 18.0 - 18.1 uses Sparserestore, not BookRestore
+    if major == 18 and minor <= 1:
+        return False
+    # iOS 18.7.5 - 25.x gap (no exploit available)
+    if major >= 18 and major <= 25:
+        if major == 18 and minor >= 7 and patch >= 5:
+            return False
+        if major > 18:
+            return False
+    return True
+
 # files is a list of FileToRestore objects
 def restore_files(files: list[FileToRestore], reboot: bool = False, lockdown_client: LockdownClient = None, progress_callback = lambda x: None):
     # create the files to be backed up
